@@ -6,6 +6,7 @@ const https = require('https');
 const http = require('http');
 const FormData = require('form-data');
 const multer = require('multer');
+const { resolveBinary } = require('./bin-utils');
 
 const app = express();
 app.use(express.json({ limit: '100mb' }));
@@ -14,6 +15,7 @@ const TEMP_BASE_DIR = 'temp-requests';
 const UPLOADS_BASE_DIR = path.join(TEMP_BASE_DIR, 'uploads');
 const OUTPUT_PUBLIC_DIR = path.join(__dirname, 'output');
 const PUBLIC_DIR = path.join(__dirname, 'public');
+const FFMPEG_BIN = resolveBinary('ffmpeg');
 
 if (!fs.existsSync(TEMP_BASE_DIR)) fs.mkdirSync(TEMP_BASE_DIR, { recursive: true });
 if (!fs.existsSync(UPLOADS_BASE_DIR)) fs.mkdirSync(UPLOADS_BASE_DIR, { recursive: true });
@@ -31,7 +33,7 @@ const upload = multer({
     }
   }),
   limits: {
-    fileSize: 1024 * 1024 * 1024
+    fileSize: 2 * 1024 * 1024 * 1024
   }
 });
 
@@ -243,7 +245,7 @@ async function processVideo(
 
     console.log(`Converting to MP4: ${videoPath}`);
     await new Promise((resolve, reject) => {
-      const proc = spawn('ffmpeg', [
+      const proc = spawn(FFMPEG_BIN, [
         '-i', videoPath,
         '-c:v', 'libx264',
         '-c:a', 'aac',
@@ -393,8 +395,28 @@ app.get('/status', (req, res) => {
   });
 });
 
+app.get('/favicon.ico', (req, res) => {
+  res.status(204).end();
+});
+
 app.get('/', (req, res) => {
   res.sendFile(path.join(PUBLIC_DIR, 'index.html'));
+});
+
+app.use((err, req, res, next) => {
+  if (err && err.name === 'MulterError') {
+    const message = err.code === 'LIMIT_FILE_SIZE'
+      ? 'One of the uploaded files is too large.'
+      : err.message;
+    return res.status(400).json({ success: false, error: message });
+  }
+
+  if (err) {
+    console.error('Unhandled server error:', err);
+    return res.status(500).json({ success: false, error: err.message || 'Internal server error' });
+  }
+
+  next();
 });
 
 const PORT = process.env.PORT || 3001;

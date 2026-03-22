@@ -3,9 +3,10 @@ const path = require('path');
 const fs = require('fs');
 const heicConvert = require('heic-convert');
 const sharp = require('sharp');
+const { resolveBinary } = require('./bin-utils');
 
-const FFMPEG = 'ffmpeg';
-const FFPROBE = 'ffprobe';
+const FFMPEG = resolveBinary('ffmpeg');
+const FFPROBE = resolveBinary('ffprobe');
 const IMAGES_DIR = process.argv[2] || 'middle-images';
 const OUTPUT = process.argv[3] || path.join(__dirname, 'output/middle-slideshow.mp4');
 const DURATION = 9;
@@ -18,7 +19,7 @@ if (!fs.existsSync(OUTPUT_DIR)) {
 
 function getVideoDurationSeconds(filePath) {
   const raw = execSync(
-    `${FFPROBE} -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "${filePath}"`
+    `"${FFPROBE}" -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "${filePath}"`
   ).toString().trim();
   const duration = Number(raw);
   if (!Number.isFinite(duration)) {
@@ -110,7 +111,7 @@ async function createSlideshow() {
 
   const absoluteOutput = path.resolve(OUTPUT);
   execSync(
-    `${FFMPEG} -y -f concat -safe 0 -i "${listFile}" -r 30 -vf "scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2,setsar=1" -c:v libx264 -preset fast -crf 18 -pix_fmt yuv420p -t ${DURATION} "${absoluteOutput}"`,
+    `"${FFMPEG}" -y -f concat -safe 0 -i "${listFile}" -r 30 -vf "scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2,setsar=1" -c:v libx264 -preset fast -crf 18 -pix_fmt yuv420p -t ${DURATION} "${absoluteOutput}"`,
     { stdio: 'inherit' }
   );
 

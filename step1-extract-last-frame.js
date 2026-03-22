@@ -1,9 +1,10 @@
 const ffmpeg = require('fluent-ffmpeg');
 const path = require('path');
 const fs = require('fs');
+const { resolveBinary } = require('./bin-utils');
 
-ffmpeg.setFfmpegPath('ffmpeg');
-ffmpeg.setFfprobePath('ffprobe');
+ffmpeg.setFfmpegPath(resolveBinary('ffmpeg'));
+ffmpeg.setFfprobePath(resolveBinary('ffprobe'));
 
 const workDir = process.argv[2] || '.';
 const INPUT_VIDEO = path.join(workDir, 'main-video.MP4');

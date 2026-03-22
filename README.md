@@ -27,6 +27,16 @@ bairantool/
 npm install
 ```
 
+### Windows Prerequisite
+
+Install FFmpeg and FFprobe:
+
+```powershell
+winget install --id Gyan.FFmpeg -e --accept-package-agreements --accept-source-agreements
+```
+
+If you just installed FFmpeg, restart your terminal before running the app.
+
 ## Usage
 
 ### API Server (Recommended)
@@ -37,6 +47,22 @@ npm start
 ```
 
 Server runs on `http://localhost:3001`
+
+### Frontend Upload UI (Easy Mode)
+
+Open in browser:
+
+`http://localhost:3001`
+
+Then:
+1. Upload one source video (MP4/MOV/AVI)
+2. Upload optional slideshow images (JPG/PNG/HEIC)
+3. Click **Generate Effect**
+4. Download the output video from the result panel
+
+This uses the new multipart endpoint:
+
+`POST /process-upload`
 
 #### Process Video
 
@@ -152,8 +178,11 @@ npm run step1 && npm run step2 && npm run step3 && npm run step4
 
 ## Requirements
 
-- macOS (uses `sips` for image conversion)
 - Node.js dependencies (installed via `npm install`)
+- FFmpeg + FFprobe available in PATH
+- `FAL_KEY` environment variable for AI background removal
+
+If `FAL_KEY` is not set, step 2 falls back to the original extracted frame so the pipeline can still complete.
 
 ## API Server
 
