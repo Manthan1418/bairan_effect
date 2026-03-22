@@ -1,0 +1,9 @@
+node_modules
+output
+middle-images
+*.mp4
+*.zip
+ffmpeg
+ffprobe
+.DS_Store
+*.log

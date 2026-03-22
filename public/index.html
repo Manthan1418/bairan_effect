@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bairan Effect Studio</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="bg-orb orb-a"></div>
+  <div class="bg-orb orb-b"></div>
+  <main class="page">
+    <section class="hero">
+      <p class="eyebrow">Bairan Effect</p>
+      <h1>Upload. Generate. Download.</h1>
+      <p class="sub">Drop one video and optional slideshow images. The pipeline runs automatically and returns your final effect video.</p>
+    </section>
+
+    <section class="card">
+      <form id="processForm">
+        <label class="field">
+          <span>Main Video (MP4/MOV/AVI)</span>
+          <input id="videoInput" name="video" type="file" accept=".mp4,.mov,.avi,video/mp4,video/quicktime,video/x-msvideo" required />
+        </label>
+
+        <label class="field">
+          <span>Slideshow Images (optional)</span>
+          <input id="imagesInput" name="images" type="file" accept=".jpg,.jpeg,.png,.heic,image/*" multiple />
+        </label>
+
+        <label class="field">
+          <span>User ID (optional)</span>
+          <input id="userIdInput" name="userId" type="text" placeholder="example: user_123" />
+        </label>
+
+        <button id="submitBtn" type="submit">Generate Effect</button>
+      </form>
+
+      <div id="status" class="status idle">Idle</div>
+      <pre id="result" class="result" hidden></pre>
+
+      <section id="outputWrap" class="output" hidden>
+        <h2>Generated Video</h2>
+        <video id="outputVideo" controls playsinline></video>
+        <a id="downloadLink" href="#" download>Download Result</a>
+      </section>
+
+      <p class="note">Note: Background removal depends on your fal.ai setup (FAL_KEY).</p>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
